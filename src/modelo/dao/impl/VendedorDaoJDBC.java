@@ -15,27 +15,27 @@ import modelo.entidades.Vendedor;
 public class VendedorDaoJDBC implements VendedorDao {
 
 	private Connection conn;
-	
+
 	public VendedorDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
-	
+
 	@Override
 	public void inserir(Vendedor obj) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void atualizar(Vendedor obj) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deletePorId(Integer id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -44,34 +44,42 @@ public class VendedorDaoJDBC implements VendedorDao {
 		ResultSet resultSet = null;
 		try {
 			statement = conn.prepareStatement(
-					"SELECT seller.*,department.Name as DepName "
-					+ "FROM seller INNER JOIN department "
-					+ "ON seller.DepartmentId = department.Id "
-					+ "WHERE seller.Id = ?");
-			
+					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "WHERE seller.Id = ?");
+
 			statement.setInt(1, id);
 			resultSet = statement.executeQuery();
-			if(resultSet.next()) {
-				Departamento departamento = new Departamento();
-				departamento.setId(resultSet.getInt("DepartmentId"));
-				departamento.setNome(resultSet.getString("DepName"));
-				
-				Vendedor vendedor = new Vendedor();
-				vendedor.setId(resultSet.getInt("Id"));
-				vendedor.setNome(resultSet.getString("Name"));
-				vendedor.setEmail(resultSet.getString("Email"));
-				vendedor.setSalaroBase(resultSet.getDouble("BaseSalary"));
-				vendedor.setAniversario(resultSet.getDate("BirthDate"));
-				vendedor.setDepartamento(departamento);
+			if (resultSet.next()) {
+				Departamento departamento = instanciandoDepartamento(resultSet);
+
+				Vendedor vendedor = instanciandoVendedor(resultSet, departamento);
 				return vendedor;
 			}
 			return null;
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
-		}finally {
+		} finally {
 			DB.closeResultSet(resultSet);
 			DB.closeStatement(statement);
 		}
+	}
+
+	private Vendedor instanciandoVendedor(ResultSet resultSet, Departamento departamento) throws SQLException {
+		Vendedor vendedor = new Vendedor();
+		vendedor.setId(resultSet.getInt("Id"));
+		vendedor.setNome(resultSet.getString("Name"));
+		vendedor.setEmail(resultSet.getString("Email"));
+		vendedor.setSalaroBase(resultSet.getDouble("BaseSalary"));
+		vendedor.setAniversario(resultSet.getDate("BirthDate"));
+		vendedor.setDepartamento(departamento);
+		return vendedor;
+	}
+
+	private Departamento instanciandoDepartamento(ResultSet resultSet) throws SQLException {
+		Departamento departamento = new Departamento();
+		departamento.setId(resultSet.getInt("DepartmentId"));
+		departamento.setNome(resultSet.getString("DepName"));
+		return departamento;
 	}
 
 	@Override
