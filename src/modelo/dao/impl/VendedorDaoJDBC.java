@@ -29,7 +29,9 @@ public class VendedorDaoJDBC implements VendedorDao {
 		PreparedStatement statement = null;
 		try {
 			statement = conn.prepareStatement("INSERT INTO seller\r\n"
-					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)\r\n" + "VALUES\r\n" + "(?, ?, ?, ?, ?)",
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)\r\n" 
+					+ "VALUES\r\n" 
+					+ "(?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 
 			statement.setString(1, obj.getNome());
